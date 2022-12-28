@@ -117,25 +117,25 @@ nibid status 2>&1 | jq .SyncInfo
 
 
 ## 13. Cоздаем или восстанавливаем кошелек и СОХРАНЯЕМ мнемонику. Задаем СВОЕ имя кошелька
-
+```
 nibid keys add ИМЯ_КОШЕЛЬКА --keyring-backend os
-
+```
 --восстановить кошелек
-
+```
 nibid keys add ИМЯ_КОШЕЛЬКА --recover --keyring-backend os
-
+```
 ##14. Пополняем свой кошелек командой или запросом 
-
+```
 $request АДРЕС_КОШЕЛЬКА
-
+```
 через кран в дискорде (кран должен быть в рабочем состоянии, когда вы будете запрашивать монеты)
 
 --проверяем баланс кошелька
-
+```
 nibid query bank balances АДРЕС_КОШЕЛЬКА
-
+```
 ## 15. Создаем валидатора, задаем СВОЕ имя ноды и вписываем свой кошелек
-
+```
 nibid tx staking create-validator \
 --chain-id nibiru-testnet-2 \
 --commission-rate 0.05 \
@@ -147,7 +147,7 @@ nibid tx staking create-validator \
 --moniker "ИМЯ_НОДЫ" \
 --from ИМЯ_КОШЕЛЬКА \
 --fees 5000unibi
-
+```
 
 ## 16. Отправляем ссылку на валидатора в канал #validator-role-request.
 
@@ -155,34 +155,48 @@ nibid tx staking create-validator \
 ### Полезные команды
 
 --проверить блоки
+```
 nibid status 2>&1 | jq ."SyncInfo"."latest_block_height"
-
+```
 --проверить логи
+```
 journalctl -u nibid -f -o cat
-
+```
 --проверить статус
+```
 curl localhost:26657/status
-
+```
 --проверить баланс
+```
 nibid query bank balances АДРЕС_КОШЕЛЬКА
+```
 --собрать реварды со всех валидаторов, которым делегировали
+```
 nibid tx distribution withdraw-all-rewards --from ИМЯ_КОШЕЛЬКА --fees 5000unibi -y
-
+```
 --заделегировать себе в стейк (так отправляется 1 монетa)
+```
 nibid tx staking delegate АДРЕС_ВАЛИДАТОРА 1000000unibi --from ИМЯ_КОШЕЛЬКА --fees 5000unibi -y
-
+```
 --отправить монеты на другой адрес
+```
 nibid tx bank send ИМЯ_СВОЕГО_КОШЕЛЬКА АДРЕС_КОШЕЛЬКА_ПОЛУЧАТЕЛЯ 1000000unibi --fees 5000unibi -y
-
+```
 --выбраться из тюрьмы
+```
 nibid tx slashing unjail --from ИМЯ_КОШЕЛЬКА --fees 5000unibi -y
+```
 --вывести список кошельков
+```
 nibid keys list
+```
 
 --удалить кошелек
+```
 nibid keys delete ИМЯ_КОШЕЛЬКА
+```
 Удалить ноду
-
+```
 systemctl stop nibid && \
 systemctl disable nibid && \
 rm /etc/systemd/system/nibid.service && \
@@ -190,3 +204,4 @@ systemctl daemon-reload && \
 cd $HOME && \
 rm -rf .nibid nibiru && \
 rm -rf $(which nibid)
+```
