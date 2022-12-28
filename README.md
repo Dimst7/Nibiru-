@@ -1,9 +1,8 @@
-# Nibiru-
+# Nibiru (Nibiru-testnet-2)
 
 # ОС Ubuntu 20.04
 
 ### Минимальные системные требования 
-
 4x процессора; чем выше тактовая частота, тем лучше
 16 ГБ ОЗУ
 250 ГБ памяти (SSD или NVME)
@@ -13,15 +12,15 @@
 1 ТБ памяти (SSD или NVME)
 
 ## 1. Обновление пакетов
-
+```
 sudo apt update && sudo apt upgrade -y
-
+```
 ## 2. Устанавливаем необходимые утилиты
-
+```
 apt install curl iptables build-essential git wget jq make gcc nano tmux htop nvme-cli pkg-config libssl-dev libleveldb-dev tar clang bsdmainutils ncdu unzip libleveldb-dev -y
-
+```
 ##  3. Устанавливаем GO
-
+```
 ver="1.19.1" && \
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz" && \
 sudo rm -rf /usr/local/go && \
@@ -30,32 +29,32 @@ rm "go$ver.linux-amd64.tar.gz" && \
 echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> $HOME/.bash_profile && \
 source $HOME/.bash_profile && \
 go version
-
+```
 ## 4. Устанавливаем бинарные файлы
-
+```
 git clone https://github.com/NibiruChain/nibiru && cd nibiru
 git checkout v0.16.2
 make install
 
 nibid version --long | grep -e version -e commit
-
+```
 ## 5. Инициализируем ноду, задаем СВОЕ имя
-
+```
 nibid init ИМЯ_НОДЫ --chain-id nibiru-testnet-2
-
+```
 ## 6.Скачиваем и проверяем Genesis
-
+```
 curl -s https://rpc.testnet-2.nibiru.fi/genesis | jq -r .result.genesis > $HOME/.nibid/config/genesis.json
 
 ## --Проверим генезис
 sha256sum ~/.nibid/config/genesis.json
-
+```
 ## 7. Скачиваем Addr book
-
+```
 wget -O $HOME/.nibid/config/addrbook.json "https://share.utsa.tech/nibiru/addrbook.json"
-
+```
 ## 8. Настраиваем конфигурацию ноды
-
+```
 nibid config chain-id nibiru-testnet-2
 
 nibid config keyring-backend os
@@ -75,18 +74,18 @@ sed -i 's/max_num_inbound_peers =.*/max_num_inbound_peers = 50/g' $HOME/.nibid/c
 sed -i 's/max_num_outbound_peers =.*/max_num_outbound_peers = 25/g' $HOME/.nibid/config/config.toml
 
 sed -i -e "s/^filter_peers *=.*/filter_peers = \"true\"/" $HOME/.nibid/config/config.toml
-
+```
 ## 9. Настраиваем прунинг (одной командой)
-
+```
 pruning="custom"
 pruning_keep_recent="1000"
 pruning_interval="10"
 sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" $HOME/.nibid/config/app.toml
 sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" $HOME/.nibid/config/app.toml
 sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" $HOME/.nibid/config/app.toml
-
-## 10. Создаем свой сервисный файл
-
+```
+## 10. Создаем сервисный файл
+```
 tee /etc/systemd/system/nibid.service > /dev/null <<EOF
 [Unit]
 Description=nibid
@@ -102,13 +101,13 @@ LimitNOFILE=65535
 [Install]
 WantedBy=multi-user.target
 EOF
-
+```
 ## 11. Запускаем узел
-
+```
 systemctl daemon-reload
 systemctl enable nibid
 systemctl restart nibid && journalctl -u nibid -f -o cat
-
+```
 
 ## 12. Ждем синхронизацию Ноды (false)
 
